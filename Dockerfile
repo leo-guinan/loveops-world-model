@@ -3,12 +3,14 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Enable corepack for pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
 # Copy package files
-COPY package.json ./
+COPY package.json pnpm-lock.yaml ./
 
 # Install dependencies (including dev dependencies for build)
-# Using npm install since package-lock.json may not exist
-RUN npm install
+RUN pnpm install --frozen-lockfile
 
 # Copy source code
 COPY tsconfig.json ./
@@ -16,19 +18,21 @@ COPY src/ ./src/
 COPY bin/ ./bin/
 
 # Build TypeScript
-RUN npm run build
+RUN pnpm run build
 
 # Runtime stage
 FROM node:20-alpine AS runtime
 
 WORKDIR /app
 
+# Enable corepack for pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
 # Copy package files
-COPY package.json ./
+COPY package.json pnpm-lock.yaml ./
 
 # Install production dependencies only
-# Using npm install since package-lock.json may not exist
-RUN npm install --omit=dev && npm cache clean --force
+RUN pnpm install --frozen-lockfile --prod && pnpm store prune
 
 # Copy built files from builder
 COPY --from=builder /app/dist ./dist
