@@ -3,7 +3,7 @@ import * as path from "path";
 import { VibeQueue } from "./vibeQueue";
 import { QueueConfig, ParsedQueueConfig, QueueJob } from "./types";
 import { LoveopsNode } from "../node/createLoveopsNode";
-import { DatingFactEvent } from "../types/datingEvents";
+import { DatingFactEvent, DatingEventType } from "../types/datingEvents";
 import { normalizeDatingEvent } from "../events/normalizeEvent";
 
 /**
@@ -147,15 +147,45 @@ export class WorldModelQueueProcessor extends QueueProcessor {
    */
   private async handleEventIngest(payload: any): Promise<boolean> {
     try {
-      // Normalize and validate the event
-      const event = normalizeDatingEvent(payload);
+      let event: DatingFactEvent;
+
+      // Handle different payload types
+      if (payload.type === "document_upload") {
+        // Transform document upload payload into a proper event
+        event = normalizeDatingEvent({
+          id: payload.userId ? `doc-upload-${payload.userId}-${Date.now()}` : undefined,
+          timestamp: new Date().toISOString(),
+          source: "views:document_upload",
+          actorId: payload.userId,
+          domain: "profile", // Document uploads are profile-related
+          type: DatingEventType.PROFILE_CREATED, // Or create a new DOCUMENT_UPLOADED type
+          payload: {
+            document: {
+              filename: payload.file?.filename,
+              mimetype: payload.file?.mimetype,
+              size: payload.file?.size,
+              data: payload.file?.data, // Base64 encoded
+            },
+            uploadType: "date_me_doc"
+          },
+          confidence: 1.0
+        });
+      } else if (payload.event) {
+        // Already a properly formatted event
+        event = normalizeDatingEvent(payload.event);
+      } else {
+        // Try to normalize as-is (might be a partial event)
+        event = normalizeDatingEvent(payload);
+      }
 
       // Append to Rhizome event log
       await this.node.appendEvent(event);
 
+      console.log(`✅ Ingested event: ${event.type} for actor ${event.actorId}`);
       return true;
     } catch (error) {
       console.error("Error ingesting event:", error);
+      console.error("Payload that failed:", JSON.stringify(payload, null, 2));
       return false;
     }
   }
