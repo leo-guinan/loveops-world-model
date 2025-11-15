@@ -7,17 +7,37 @@ async function main() {
 
   if (!command || command === "run-node") {
     const node = await createLoveopsNode();
-    console.log("LoveOps Rhizome node running...");
-    await node.start();
     
-    // Keep process alive
-    process.on("SIGINT", async () => {
-      console.log("\nShutting down...");
+    // Set up signal handlers before starting
+    const shutdown = async (signal: string) => {
+      console.log(`\nReceived ${signal}, shutting down gracefully...`);
       await node.stop();
       process.exit(0);
+    };
+
+    process.on("SIGINT", () => shutdown("SIGINT"));
+    process.on("SIGTERM", () => shutdown("SIGTERM"));
+    
+    // Start the node
+    console.log("LoveOps Rhizome node starting...");
+    await node.start();
+    
+    // Keep process alive - use setInterval to keep event loop running
+    // This ensures queue processors and other async operations continue
+    const keepAlive = setInterval(() => {
+      // Just keep the event loop alive
+    }, 1000);
+    
+    // Clear interval on shutdown
+    process.on("exit", () => {
+      clearInterval(keepAlive);
     });
     
-    return;
+    // Keep the process running
+    console.log("Node is running. Press Ctrl+C to stop.");
+    
+    // Wait indefinitely (process will be killed by signal handlers)
+    await new Promise(() => {});
   }
 
   if (command === "init-node") {
