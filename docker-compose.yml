@@ -15,11 +15,16 @@ services:
       - RHIZOME_P2P_PORT=7000
       - RHIZOME_HTTP_PORT=8080
       - RHIZOME_P2P_SEEDS=${RHIZOME_P2P_SEEDS:-}
+      - VQ_QUEUE_CONFIG=${VQ_QUEUE_CONFIG:-}
+      - VQ_BASE_PATH=${VQ_BASE_PATH:-/var/queues}
+      - METRICS_PATH=${METRICS_PATH:-/data/metrics/last_deploy}
     volumes:
       - loveops-data:/data
+      - queue-data:/var/queues
     restart: unless-stopped
     command: ["node", "dist/node/cli.js", "run-node"]
 
 volumes:
   loveops-data:
+  queue-data:
 

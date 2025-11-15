@@ -17,3 +17,6 @@ export { normalizeEvent, normalizeDatingEvent } from "./events/normalizeEvent";
 export { env } from "./config/env";
 export { buildRhizomeConfig, type RhizomeConfig } from "./config/rhizomeConfig";
 
+// Queue processing
+export * from "./queue";
+

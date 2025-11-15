@@ -7,11 +7,19 @@
   "bin": {
     "loveops-world-model": "./bin/loveops-world-model"
   },
+  "files": [
+    "dist",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "pnpm run clean && pnpm run build",
+    "prepack": "pnpm run build",
+    "release": "pnpm run build && npm publish"
   },
   "keywords": [
     "dating",
@@ -22,7 +30,8 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "loveops-policies": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",

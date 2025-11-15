@@ -3,6 +3,8 @@ import { env } from "../config/env";
 import { initStorage } from "./initStorage";
 import { registerViews } from "./registerViews";
 import { startNetworking } from "./startNetworking";
+import { WorldModelQueueProcessor } from "../queue/processor";
+import { parseQueueConfig } from "../queue/config";
 
 export type LoveopsNodeConfig = {
   dbPath?: string;
@@ -22,6 +24,7 @@ export type LoveopsNode = {
   _networkingStarted?: boolean;
   _p2pPort?: number;
   _p2pSeeds?: string[];
+  _queueProcessor?: WorldModelQueueProcessor;
 };
 
 /**
@@ -82,6 +85,19 @@ export async function createLoveopsNode(
       // Start networking
       await startNetworking(node, rhizomeConfig);
       
+      // Start queue processing if VQ_QUEUE_CONFIG is set
+      if (process.env.VQ_QUEUE_CONFIG || process.env.VQ_BASE_PATH) {
+        try {
+          const queueConfig = parseQueueConfig();
+          const queueProcessor = new WorldModelQueueProcessor(node, queueConfig);
+          queueProcessor.start();
+          node._queueProcessor = queueProcessor;
+          console.log(`Queue processor started for ${queueConfig.queues.length} queues`);
+        } catch (error) {
+          console.error("Failed to start queue processor:", error);
+        }
+      }
+      
       // TODO: Start HTTP server if needed
       // await node.startHTTP();
       
@@ -91,6 +107,11 @@ export async function createLoveopsNode(
       console.log(`  HTTP: port ${rhizomeConfig.http.port}`);
     },
     stop: async () => {
+      // Stop queue processor
+      if (node._queueProcessor) {
+        node._queueProcessor.stop();
+      }
+      
       // TODO: Implement graceful shutdown
       console.log(`LoveOps node stopped: ${rhizomeConfig.nodeId}`);
     },

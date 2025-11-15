@@ -1,0 +1,57 @@
+# Source files (only dist should be published)
+src/
+tsconfig.json
+
+# Development files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+.nyc_output/
+*.test.ts
+*.spec.ts
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Docker (not needed in npm package)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Environment files
+.env
+.env.local
+.env.example
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Git
+.git/
+.gitignore
+
+# Documentation (keep README.md, ignore others)
+CHANGELOG.md
+CONTRIBUTING.md
+
+# Lock files (keep pnpm-lock.yaml for reproducible installs)
+# Actually, we should include pnpm-lock.yaml for reproducible builds
+

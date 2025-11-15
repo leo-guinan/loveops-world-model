@@ -6,5 +6,9 @@ export const env = {
   RHIZOME_P2P_SEEDS: process.env.RHIZOME_P2P_SEEDS
     ? process.env.RHIZOME_P2P_SEEDS.split(",").map((s) => s.trim())
     : [],
+  // Queue configuration
+  VQ_QUEUE_CONFIG: process.env.VQ_QUEUE_CONFIG,
+  VQ_BASE_PATH: process.env.VQ_BASE_PATH ?? "/var/queues",
+  METRICS_PATH: process.env.METRICS_PATH ?? "./metrics/last_deploy",
 };
 
