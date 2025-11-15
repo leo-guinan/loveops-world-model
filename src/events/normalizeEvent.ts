@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
-import { FactEvent, DatingFactEvent } from "../types/core";
-import { DatingDomain, DatingEventType } from "../types/datingEvents";
+import { FactEvent } from "../types/core";
+import { DatingFactEvent, DatingDomain, DatingEventType } from "../types/datingEvents";
 
 /**
  * Enriches/normalizes raw events before storage.

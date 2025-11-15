@@ -1,4 +1,5 @@
 import { buildRhizomeConfig, RhizomeConfig } from "../config/rhizomeConfig";
+import { env } from "../config/env";
 import { initStorage } from "./initStorage";
 import { registerViews } from "./registerViews";
 import { startNetworking } from "./startNetworking";
@@ -37,17 +38,22 @@ export type LoveopsNode = {
 export async function createLoveopsNode(
   config: LoveopsNodeConfig = {}
 ): Promise<LoveopsNode> {
-  const rhizomeConfig = buildRhizomeConfig({
-    dbPath: config.dbPath,
-    nodeId: config.nodeId,
-    p2p: {
-      port: config.p2pPort,
-      seeds: config.seeds,
-    },
-    http: {
+  // Build config with overrides, letting buildRhizomeConfig handle defaults
+  const overrides: Partial<RhizomeConfig> = {};
+  if (config.dbPath) overrides.dbPath = config.dbPath;
+  if (config.nodeId) overrides.nodeId = config.nodeId;
+  if (config.p2pPort !== undefined || config.seeds !== undefined) {
+    overrides.p2p = {
+      port: config.p2pPort ?? env.RHIZOME_P2P_PORT,
+      seeds: config.seeds ?? env.RHIZOME_P2P_SEEDS,
+    };
+  }
+  if (config.httpPort !== undefined) {
+    overrides.http = {
       port: config.httpPort,
-    },
-  });
+    };
+  }
+  const rhizomeConfig = buildRhizomeConfig(overrides);
 
   // Initialize storage
   await initStorage(rhizomeConfig);

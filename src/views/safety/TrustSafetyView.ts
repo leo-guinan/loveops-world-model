@@ -1,15 +1,24 @@
-import { DatingFactEvent } from "../../types/datingEvents";
-import { WorldViewParams, WorldView } from "../../types/core";
+import { FactEvent, WorldViewParams, WorldView } from "../../types/core";
+import { DatingFactEvent, DatingEventType } from "../../types/datingEvents";
 import { TrustSafetyState } from "../../types/states";
-import { DatingEventType } from "../../types/datingEvents";
 
 export const TrustSafetyView: WorldView<TrustSafetyState> = (
-  events: DatingFactEvent[],
+  events: FactEvent[],
   params?: WorldViewParams
 ): TrustSafetyState => {
+  // Filter and cast to DatingFactEvent
+  const datingEvents = events.filter(
+    (e): e is DatingFactEvent =>
+      e.domain === "profile" ||
+      e.domain === "match" ||
+      e.domain === "message" ||
+      e.domain === "feedback" ||
+      e.domain === "safety" ||
+      e.domain === "system"
+  );
   const asOf = params?.asOf ? new Date(params.asOf) : new Date();
 
-  const relevant = events.filter(
+  const relevant = datingEvents.filter(
     (e) =>
       (e.domain === "safety" || e.domain === "match" || e.domain === "feedback") &&
       new Date(e.timestamp) <= asOf

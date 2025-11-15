@@ -1,12 +1,21 @@
-import { DatingFactEvent } from "../../types/datingEvents";
-import { WorldViewParams, WorldView } from "../../types/core";
+import { FactEvent, WorldViewParams, WorldView } from "../../types/core";
+import { DatingFactEvent, DatingEventType } from "../../types/datingEvents";
 import { MatchCompatibilityState } from "../../types/states";
-import { DatingEventType } from "../../types/datingEvents";
 
 export const MatchCompatibilityView: WorldView<MatchCompatibilityState> = (
-  events: DatingFactEvent[],
+  events: FactEvent[],
   params?: WorldViewParams
 ): MatchCompatibilityState => {
+  // Filter and cast to DatingFactEvent
+  const datingEvents = events.filter(
+    (e): e is DatingFactEvent =>
+      e.domain === "profile" ||
+      e.domain === "match" ||
+      e.domain === "message" ||
+      e.domain === "feedback" ||
+      e.domain === "safety" ||
+      e.domain === "system"
+  );
   const asOf = params?.asOf ? new Date(params.asOf) : new Date();
   const perspective = params?.perspective;
 
@@ -22,7 +31,7 @@ export const MatchCompatibilityView: WorldView<MatchCompatibilityState> = (
     }
   }
 
-  const relevant = events.filter((e) => {
+  const relevant = datingEvents.filter((e) => {
     const eventTime = new Date(e.timestamp);
     if (eventTime > asOf) return false;
 

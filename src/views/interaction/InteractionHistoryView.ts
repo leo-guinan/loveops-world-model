@@ -1,16 +1,25 @@
-import { DatingFactEvent } from "../../types/datingEvents";
-import { WorldViewParams, WorldView } from "../../types/core";
+import { FactEvent, WorldViewParams, WorldView } from "../../types/core";
+import { DatingFactEvent, DatingEventType } from "../../types/datingEvents";
 import { InteractionHistoryState } from "../../types/states";
-import { DatingEventType } from "../../types/datingEvents";
 
 export const InteractionHistoryView: WorldView<InteractionHistoryState> = (
-  events: DatingFactEvent[],
+  events: FactEvent[],
   params?: WorldViewParams
 ): InteractionHistoryState => {
+  // Filter and cast to DatingFactEvent
+  const datingEvents = events.filter(
+    (e): e is DatingFactEvent =>
+      e.domain === "profile" ||
+      e.domain === "match" ||
+      e.domain === "message" ||
+      e.domain === "feedback" ||
+      e.domain === "safety" ||
+      e.domain === "system"
+  );
   const asOf = params?.asOf ? new Date(params.asOf) : new Date();
   const horizon = params?.horizon ? parseHorizon(params.horizon) : null;
 
-  const relevant = events.filter((e) => {
+  const relevant = datingEvents.filter((e) => {
     const eventTime = new Date(e.timestamp);
     if (eventTime > asOf) return false;
     if (horizon && eventTime < horizon) return false;
