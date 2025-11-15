@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  loveops-node:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: loveops-world-model
+    ports:
+      - "${RHIZOME_P2P_PORT:-7000}:7000"
+      - "${RHIZOME_HTTP_PORT:-8080}:8080"
+    environment:
+      - RHIZOME_DB_PATH=/data/loveops.db
+      - RHIZOME_NODE_ID=${RHIZOME_NODE_ID:-loveops-node-1}
+      - RHIZOME_P2P_PORT=7000
+      - RHIZOME_HTTP_PORT=8080
+      - RHIZOME_P2P_SEEDS=${RHIZOME_P2P_SEEDS:-}
+    volumes:
+      - loveops-data:/data
+    restart: unless-stopped
+    command: ["node", "dist/node/cli.js", "run-node"]
+
+volumes:
+  loveops-data:
+

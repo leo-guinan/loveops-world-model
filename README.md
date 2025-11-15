@@ -60,6 +60,44 @@ const profile = await node.queryView("UserProfileStateView", {
 });
 ```
 
+## Docker
+
+### Build
+
+```bash
+docker build -t loveops-world-model .
+```
+
+### Run
+
+```bash
+docker run -d \
+  --name loveops-node \
+  -p 7000:7000 \
+  -p 8080:8080 \
+  -v loveops-data:/data \
+  -e RHIZOME_NODE_ID=my-node \
+  loveops-world-model
+```
+
+### Docker Compose
+
+```bash
+# Start node
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop node
+docker-compose down
+
+# Stop and remove volumes
+docker-compose down -v
+```
+
+The database is persisted in a Docker volume (`loveops-data`) mounted at `/data`.
+
 ## Architecture
 
 - **Events**: Immutable fact log (`DatingFactEvent`)
