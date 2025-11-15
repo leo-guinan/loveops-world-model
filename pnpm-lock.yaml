@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  loveops-policies:
+    specifier: 0.1.0
+    version: 0.1.0
   zod:
     specifier: ^3.22.4
     version: 3.25.76
@@ -24,6 +27,20 @@ packages:
     dependencies:
       undici-types: 6.21.0
     dev: true
+
+  /loveops-policies@0.1.0:
+    resolution: {integrity: sha512-y1WBsmQPG3Bhpxt31IdKmf6HwIAV1Fo7fgnouOI+skJHpdSGMB3XjGN9AVErrPO59z6YsysDBJTroo8Pr3z8RQ==}
+    dependencies:
+      loveops-world-model: 0.1.0
+    dev: false
+
+  /loveops-world-model@0.1.0:
+    resolution: {integrity: sha512-cQeTOKLGaX5j8pr/w13CSD9c77tNfWZ1+M73+Vp/qN8JBNlqSLYQyQ8WFblkKxRYjyBJjDVP+C+8l78Wqt7zVw==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
+    dependencies:
+      zod: 3.25.76
+    dev: false
 
   /typescript@5.9.3:
     resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
